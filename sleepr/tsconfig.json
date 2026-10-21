@@ -37,6 +37,9 @@
     },
     {
       "path": "./apps/reservations/tsconfig.app.json"
+    },
+    {
+      "path": "./apps/auth/tsconfig.app.json"
     }
   ]
 }

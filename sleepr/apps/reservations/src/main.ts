@@ -2,6 +2,8 @@ import {NestFactory} from '@nestjs/core';
 import {ReservationsModule} from './reservations.module.js';
 import {ValidationPipe} from '@nestjs/common';
 import {Logger} from 'nestjs-pino';
+import {ConfigService} from '@nestjs/config';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
     const app = await NestFactory.create(ReservationsModule);
@@ -10,8 +12,10 @@ async function bootstrap() {
         whitelist: true,
     }));
     app.useLogger(app.get(Logger))
+    app.use(cookieParser())
 
-    await app.listen(3000);
+    const configService = app.get(ConfigService);
+    await app.listen(configService.getOrThrow('PORT'));
 }
 
 await bootstrap();

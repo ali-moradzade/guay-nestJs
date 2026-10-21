@@ -10,11 +10,11 @@ export class ReservationsService {
     ) {
     }
 
-    create(createReservationDto: CreateReservationDto) {
+    create(createReservationDto: CreateReservationDto, userId: string) {
         return this.repository.create({
             ...createReservationDto,
             timestamp: new Date(),
-            userId: '123',
+            userId,
         });
     }
 
