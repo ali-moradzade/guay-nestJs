@@ -40,6 +40,9 @@
     },
     {
       "path": "./apps/auth/tsconfig.app.json"
+    },
+    {
+      "path": "./apps/payments/tsconfig.app.json"
     }
   ]
 }
