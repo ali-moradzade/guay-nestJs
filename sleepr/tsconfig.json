@@ -43,6 +43,9 @@
     },
     {
       "path": "./apps/payments/tsconfig.app.json"
+    },
+    {
+      "path": "./apps/notifications/tsconfig.app.json"
     }
   ]
 }
