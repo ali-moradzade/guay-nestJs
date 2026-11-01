@@ -5,14 +5,16 @@ WORKDIR /usr/src/app
 
 COPY package.json .
 COPY pnpm-lock.yaml .
+COPY tsconfig.json tsconfig.json
+COPY nest-cli.json nest-cli.json
 
 RUN npm install -g pnpm
 
-RUN pnpm install
+COPY apps/payments apps/payments
 
-COPY . .
+RUN pnpm install -r
 
-RUN pnpm run build
+RUN pnpm run build payments
 
 FROM node:22-bookworm-slim AS production
 #FROM node:alpine AS production
