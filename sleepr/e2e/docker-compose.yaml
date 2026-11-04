@@ -1,0 +1,81 @@
+services:
+  e2e:
+    build:
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./specs:/usr/src/app/specs
+    depends_on:
+      reservations:
+        condition: service_healthy
+      auth:
+        condition: service_started
+      payments:
+        condition: service_started
+      notifications:
+        condition: service_started
+  reservations:
+    build:
+      context: ..
+      dockerfile: ./apps/reservations/Dockerfile
+      target: development
+    command: pnpm run start:dev reservations
+    env_file:
+      - ../apps/reservations/.env
+    ports:
+      - '3000:3000'
+    depends_on:
+      mongo:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "node", "-e", "fetch('http://127.0.0.1:3000/').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
+  auth:
+    build:
+      context: ..
+      dockerfile: ./apps/auth/Dockerfile
+      target: development
+    command: pnpm run start:dev auth
+    env_file:
+      - ../apps/auth/.env
+    ports:
+      - '3001:3001'
+    depends_on:
+      mongo:
+        condition: service_healthy
+  payments:
+    build:
+      context: ..
+      dockerfile: ./apps/payments/Dockerfile
+      target: development
+    command: pnpm run start:dev payments
+    env_file:
+      - ../apps/payments/.env
+    ports:
+      - '3003:3003'
+    depends_on:
+      mongo:
+        condition: service_healthy
+  notifications:
+    build:
+      context: ..
+      dockerfile: ./apps/notifications/Dockerfile
+      target: development
+    command: pnpm run start:dev notifications
+    ports:
+      - '3004:3004'
+    env_file:
+      - ../apps/notifications/.env
+    depends_on:
+      mongo:
+        condition: service_healthy
+  mongo:
+    image: mongo
+    healthcheck:
+      test: [ "CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
