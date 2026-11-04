@@ -1,2 +1,6 @@
-allowBuilds:
-  bcrypt: true
+packages:
+  - 'apps/*'
+onlyBuiltDependencies:
+  - '@nestjs/core'
+  - nestjs-pino
+  - unrs-resolver

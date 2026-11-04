@@ -14,6 +14,7 @@
       "entryFile": "main",
       "sourceRoot": "apps/auth/src",
       "compilerOptions": {
+        "builder": "tsc",
         "tsConfigPath": "apps/auth/tsconfig.app.json"
       }
     },

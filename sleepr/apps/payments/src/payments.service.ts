@@ -13,9 +13,9 @@ export class PaymentsService {
         private readonly configService: ConfigService,
         @Inject(NOTIFICATIONS_SERVICE) private readonly notificationsService: ClientProxy,
     ) {
-        this.stripe = new Stripe(this.configService.getOrThrow('STRIPE_SECRET_KEY'), {
-            apiVersion: '2026-09-30.endive',
-        });
+        // this.stripe = new Stripe(this.configService.getOrThrow('STRIPE_SECRET_KEY'), {
+        //     apiVersion: '2026-09-30.endive',
+        // });
     }
 
     async createCharge({card, amount, email}: PaymentsCreateChargeDto) {
