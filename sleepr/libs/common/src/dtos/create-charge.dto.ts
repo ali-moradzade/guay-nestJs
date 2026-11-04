@@ -1,14 +1,15 @@
-import {CardDto} from './card.dto.js'
-import {IsDefined, IsNotEmptyObject, IsNumber, ValidateNested} from 'class-validator';
+import {CardDto} from './card.dto.js';
+import {IsNotEmptyObject, IsNumber, IsOptional, IsPositive, ValidateNested} from 'class-validator';
 import {Type} from 'class-transformer';
 
 export class CreateChargeDto {
-    @IsDefined()
+    @IsOptional()
     @IsNotEmptyObject()
     @ValidateNested()
     @Type(() => CardDto)
-    card: CardDto;
+    card?: CardDto;
 
-    @IsNumber()
+    @IsNumber({maxDecimalPlaces: 2})
+    @IsPositive()
     amount: number;
 }

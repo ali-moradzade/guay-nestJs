@@ -33,6 +33,8 @@ services:
       - ./apps/payments/.env
     volumes:
       - .:/usr/src/app
+    ports:
+      - '3005:3005'
   notifications:
     build:
       context: .

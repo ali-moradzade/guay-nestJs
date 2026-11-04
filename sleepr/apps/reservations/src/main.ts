@@ -4,6 +4,7 @@ import {ValidationPipe} from '@nestjs/common';
 import {Logger} from 'nestjs-pino';
 import {ConfigService} from '@nestjs/config';
 import cookieParser from 'cookie-parser';
+import {Transport} from '@nestjs/microservices';
 
 async function bootstrap() {
     const app = await NestFactory.create(ReservationsModule);
@@ -15,7 +16,17 @@ async function bootstrap() {
     app.use(cookieParser())
 
     const configService = app.get(ConfigService);
-    await app.listen(configService.getOrThrow('PORT'));
+
+    app.connectMicroservice({
+        transport: Transport.TCP,
+        options: {
+            host: '0.0.0.0',
+            port: configService.getOrThrow('TCP_PORT')
+        }
+    })
+    await app.startAllMicroservices();
+
+    await app.listen(configService.getOrThrow('HTTP_PORT'));
 }
 
 await bootstrap();
