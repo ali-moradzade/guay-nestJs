@@ -35,20 +35,20 @@ export class ReservationsController {
     @Get(':id')
     @UseGuards(JwtAuthGuard)
     findOne(@Param('id') id: string) {
-        return this.reservationsService.findOne(id);
+        return this.reservationsService.findOne(+id);
     }
 
     @Patch(':id')
     @UseGuards(JwtAuthGuard)
     update(@Param('id') id: string, @Body() updateReservationDto: UpdateReservationDto) {
-        return this.reservationsService.update(id, updateReservationDto);
+        return this.reservationsService.update(+id, updateReservationDto);
     }
 
     @Delete(':id')
     @UseGuards(JwtAuthGuard)
     @Roles('Admin')
     remove(@Param('id') id: string) {
-        return this.reservationsService.remove(id);
+        return this.reservationsService.remove(+id);
     }
 
     @EventPattern(PAYMENT_SUCCEEDED_EVENT)

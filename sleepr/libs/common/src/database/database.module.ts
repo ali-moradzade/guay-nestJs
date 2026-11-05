@@ -1,19 +1,32 @@
 import {Module} from '@nestjs/common';
-import {ModelDefinition, MongooseModule} from '@nestjs/mongoose';
 import {ConfigService} from '@nestjs/config';
+import {TypeOrmModule} from '@nestjs/typeorm';
+
+type EntityModels = NonNullable<
+    Parameters<typeof TypeOrmModule.forFeature>[0]
+>;
 
 @Module({
-    imports: [MongooseModule.forRootAsync({
-        useFactory: (configService: ConfigService) => ({
-            uri: configService.get<string>('MONGODB_URI')
+    imports: [
+        TypeOrmModule.forRootAsync({
+            useFactory: (configService: ConfigService) => ({
+                type: 'mysql',
+                host: configService.getOrThrow('MYSQL_HOST'),
+                port: configService.getOrThrow('MYSQL_PORT'),
+                database: configService.getOrThrow('MYSQL_DATABASE'),
+                username: configService.getOrThrow('MYSQL_USERNAME'),
+                password: configService.getOrThrow('MYSQL_PASSWORD'),
+                synchronize: configService.getOrThrow('MYSQL_SYNCHRONIZE'),
+                autoLoadEntities: true,
+            }),
+            inject: [
+                ConfigService,
+            ]
         }),
-        inject: [
-            ConfigService,
-        ]
-    })]
+    ]
 })
 export class DatabaseModule {
-    static forFeature(models: ModelDefinition[]) {
-        return MongooseModule.forFeature(models);
+    static forFeature(models: EntityModels) {
+        return TypeOrmModule.forFeature(models);
     }
 }

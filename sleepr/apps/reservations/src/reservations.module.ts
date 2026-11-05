@@ -3,7 +3,7 @@ import {ReservationsService} from './reservations.service.js';
 import {ReservationsController} from './reservations.controller.js';
 import {AUTH_SERVICE, DatabaseModule, HealthModule, LoggerModule, PAYMENTS_SERVICE} from '@app/common';
 import {ReservationRepository} from './reservation.repository.js';
-import {ReservationDocument, ReservationSchema} from './models/reservation.schema.js';
+import {Reservation} from './models/reservation.entity.js';
 import {ConfigModule, ConfigService} from '@nestjs/config';
 import Joi from 'joi';
 import {ClientsModule, Transport} from '@nestjs/microservices';
@@ -12,7 +12,7 @@ import {ClientsModule, Transport} from '@nestjs/microservices';
     imports: [
         DatabaseModule,
         DatabaseModule.forFeature([
-            {name: ReservationDocument.name, schema: ReservationSchema}
+            Reservation,
         ]),
         LoggerModule,
         ConfigModule.forRoot({
