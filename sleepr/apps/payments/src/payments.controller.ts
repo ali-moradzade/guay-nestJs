@@ -1,6 +1,6 @@
 import {Controller, UsePipes, ValidationPipe} from '@nestjs/common';
 import {PaymentsService} from './payments.service.js';
-import {MessagePattern, Payload} from '@nestjs/microservices';
+import {Ctx, MessagePattern, Payload, RmqContext} from '@nestjs/microservices';
 import {PaymentsCreateChargeDto} from './dtos/payments-create-charge.dto.js';
 import {CreateCheckoutSessionDto} from '@app/common';
 
@@ -13,7 +13,13 @@ export class PaymentsController {
     @UsePipes(new ValidationPipe())
     async createCharge(
         @Payload() data: PaymentsCreateChargeDto,
+        @Ctx() context: RmqContext,
     ) {
+        const channel = context.getChannelRef();
+        const originalMessage = context.getMessage();
+
+        channel.ack(originalMessage);
+
         return this.paymentsService.createCharge(data);
     }
 

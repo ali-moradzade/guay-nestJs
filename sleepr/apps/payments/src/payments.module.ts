@@ -29,10 +29,12 @@ import {StripeWebhookController} from './stripe-webhook.controller.js';
             {
                 name: NOTIFICATIONS_SERVICE,
                 useFactory: (configService: ConfigService) => ({
-                    transport: Transport.TCP,
+                    transport: Transport.RMQ,
                     options: {
-                        host: configService.getOrThrow('NOTIFICATIONS_HOST'),
-                        port: configService.getOrThrow('NOTIFICATIONS_PORT'),
+                        urls: [
+                            configService.getOrThrow<string>('RABBITMQ_URI')
+                        ],
+                        queue: 'notifications',
                     }
                 }),
                 inject: [ConfigService],
@@ -40,10 +42,12 @@ import {StripeWebhookController} from './stripe-webhook.controller.js';
             {
                 name: RESERVATIONS_SERVICE,
                 useFactory: (configService: ConfigService) => ({
-                    transport: Transport.TCP,
+                    transport: Transport.RMQ,
                     options: {
-                        host: configService.getOrThrow('RESERVATIONS_HOST'),
-                        port: configService.getOrThrow('RESERVATIONS_PORT')
+                        urls: [
+                            configService.getOrThrow<string>('RABBITMQ_URI')
+                        ],
+                        queue: 'reservations',
                     }
                 }),
                 inject: [ConfigService],
