@@ -1,18 +1,30 @@
-import {CanActivate, ExecutionContext, Inject, Injectable, Logger, UnauthorizedException} from '@nestjs/common';
+import {
+    CanActivate,
+    ExecutionContext,
+    Inject,
+    Injectable,
+    Logger,
+    OnModuleInit,
+    UnauthorizedException
+} from '@nestjs/common';
 import {catchError, map, Observable, of, tap} from 'rxjs';
-import {AUTH_SERVICE} from '../constants/services.js';
-import {ClientProxy} from '@nestjs/microservices';
-import {UserDto} from '@app/common';
+import type {ClientGrpc} from '@nestjs/microservices';
+import {AUTH_SERVICE_NAME, AuthServiceClient} from '@app/common';
 import {Reflector} from '@nestjs/core';
 
 @Injectable()
-export class JwtAuthGuard implements CanActivate {
+export class JwtAuthGuard implements CanActivate, OnModuleInit {
     private readonly logger = new Logger(JwtAuthGuard.name);
+    private authService: AuthServiceClient;
 
     constructor(
-        @Inject(AUTH_SERVICE) private readonly authClient: ClientProxy,
+        @Inject(AUTH_SERVICE_NAME) private readonly client: ClientGrpc,
         private readonly reflector: Reflector,
     ) {
+    }
+
+    onModuleInit(): any {
+        this.authService = this.client.getService<AuthServiceClient>(AUTH_SERVICE_NAME);
     }
 
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
@@ -27,7 +39,7 @@ export class JwtAuthGuard implements CanActivate {
 
         const roles = this.reflector.get<string[]>('roles', context.getHandler());
 
-        return this.authClient.send<UserDto>('authenticate', {
+        return this.authService.authenticate({
             Authentication: jwt
         }).pipe(
             tap((res) => {
@@ -40,7 +52,10 @@ export class JwtAuthGuard implements CanActivate {
                     }
                 }
 
-                context.switchToHttp().getRequest().user = res;
+                context.switchToHttp().getRequest().user = {
+                    ...res,
+                    _id: res.id,
+                };
             }),
             map(() => true),
             catchError((error) => {

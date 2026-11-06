@@ -3,9 +3,10 @@ import {PaymentsController} from './payments.controller.js';
 import {PaymentsService} from './payments.service.js';
 import {ConfigModule, ConfigService} from '@nestjs/config';
 import Joi from 'joi';
-import {LoggerModule, NOTIFICATIONS_SERVICE, RESERVATIONS_SERVICE} from '@app/common';
+import {LoggerModule, NOTIFICATIONS_PACKAGE_NAME, NOTIFICATIONS_SERVICE_NAME, RESERVATIONS_SERVICE} from '@app/common';
 import {ClientsModule, Transport} from '@nestjs/microservices';
 import {StripeWebhookController} from './stripe-webhook.controller.js';
+import {join} from 'path';
 
 @Module({
     imports: [
@@ -27,14 +28,13 @@ import {StripeWebhookController} from './stripe-webhook.controller.js';
         LoggerModule,
         ClientsModule.registerAsync([
             {
-                name: NOTIFICATIONS_SERVICE,
+                name: NOTIFICATIONS_SERVICE_NAME,
                 useFactory: (configService: ConfigService) => ({
-                    transport: Transport.RMQ,
+                    transport: Transport.GRPC,
                     options: {
-                        urls: [
-                            configService.getOrThrow<string>('RABBITMQ_URI')
-                        ],
-                        queue: 'notifications',
+                        package: NOTIFICATIONS_PACKAGE_NAME,
+                        protoPath: join(__dirname, '../../../proto/notifications.proto'),
+                        url: configService.getOrThrow('NOTIFICATIONS_GRPC_URL'),
                     }
                 }),
                 inject: [ConfigService],

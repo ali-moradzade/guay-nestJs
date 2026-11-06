@@ -1,19 +1,30 @@
-import {Inject, Injectable, Logger, NotFoundException} from '@nestjs/common';
+import {Inject, Injectable, Logger, NotFoundException, OnModuleInit} from '@nestjs/common';
 import {CreateReservationDto} from './dto/create-reservation.dto.js';
 import {UpdateReservationDto} from './dto/update-reservation.dto.js';
 import {ReservationRepository} from './reservation.repository.js';
-import {CheckoutSessionCreated, PaymentFailedDto, PAYMENTS_SERVICE, PaymentSucceededDto, UserDto} from '@app/common';
-import {ClientProxy} from '@nestjs/microservices';
+import {
+    PaymentFailedDto,
+    PAYMENTS_SERVICE_NAME,
+    PaymentsServiceClient,
+    PaymentSucceededDto,
+    UserDto
+} from '@app/common';
+import type {ClientGrpc} from '@nestjs/microservices';
 import {lastValueFrom} from 'rxjs';
 
 @Injectable()
-export class ReservationsService {
+export class ReservationsService implements OnModuleInit {
     private readonly logger = new Logger(ReservationsService.name);
+    private paymentsService: PaymentsServiceClient;
 
     constructor(
         private readonly repository: ReservationRepository,
-        @Inject(PAYMENTS_SERVICE) private readonly paymentsService: ClientProxy,
+        @Inject(PAYMENTS_SERVICE_NAME) private readonly client: ClientGrpc,
     ) {
+    }
+
+    onModuleInit(): any {
+        this.paymentsService = this.client.getService<PaymentsServiceClient>(PAYMENTS_SERVICE_NAME);
     }
 
     async create(
@@ -32,9 +43,10 @@ export class ReservationsService {
         {email, _id: userId}: UserDto,
     ) {
         const paymentIntent = await lastValueFrom(
-            this.paymentsService.send<{ id: string }>('create_charge', {
+            this.paymentsService.createCharge({
                 ...charge,
                 email,
+                card: charge.card,
             })
         );
         return this.repository.create({
@@ -61,12 +73,12 @@ export class ReservationsService {
         });
 
         const session = await lastValueFrom(
-            this.paymentsService.send<CheckoutSessionCreated>(
-                'create_checkout_session',
+            this.paymentsService.createCharge(
                 {
                     amount: charge.amount,
                     email,
-                    reservationId: reservation._id.toHexString(),
+                    // reservationId: reservation._id.toHexString(),
+                    card: charge.card
                 }
             )
         );
@@ -78,7 +90,8 @@ export class ReservationsService {
 
         return {
             ...updatedReservation,
-            paymentUrl: session.url,
+            // paymentUrl: session.url,
+            paymentUrl: 'https://www.google.com/',
         };
     }
 

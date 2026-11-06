@@ -1,6 +1,4 @@
 packages:
   - 'apps/*'
-onlyBuiltDependencies:
-  - '@nestjs/core'
-  - nestjs-pino
-  - unrs-resolver
+allowBuilds:
+  protobufjs: true

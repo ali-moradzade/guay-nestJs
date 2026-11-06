@@ -6,3 +6,4 @@ export * from './decorators/index.js';
 export * from './dtos/index.js';
 export * from './models/index.js';
 export * from './health/index.js';
+export * from './types/index.js';

@@ -3,6 +3,8 @@ import {NotificationsModule} from './notifications.module.js';
 import {ConfigService} from '@nestjs/config';
 import {Transport} from '@nestjs/microservices';
 import {Logger} from 'nestjs-pino';
+import {NOTIFICATIONS_PACKAGE_NAME} from '@app/common';
+import {join} from 'path';
 
 async function bootstrap() {
     const app = await NestFactory.create(NotificationsModule);
@@ -11,12 +13,11 @@ async function bootstrap() {
     app.enableShutdownHooks();
 
     app.connectMicroservice({
-        transport: Transport.RMQ,
+        transport: Transport.GRPC,
         options: {
-            urls: [
-                configService.getOrThrow('RABBITMQ_URI')
-            ],
-            queue: 'notifications',
+            package: NOTIFICATIONS_PACKAGE_NAME,
+            protoPath: join(__dirname, '../../../proto/notifications.proto'),
+            url: configService.getOrThrow('NOTIFICATIONS_GRPC_URL'),
         }
     });
     app.useLogger(app.get(Logger));

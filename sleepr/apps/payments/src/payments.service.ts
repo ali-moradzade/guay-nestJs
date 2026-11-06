@@ -4,20 +4,23 @@ import {Stripe} from 'stripe';
 import {
     CheckoutSessionCreated,
     CreateCheckoutSessionDto,
-    NOTIFICATIONS_SERVICE, PAYMENT_FAILED_EVENT,
+    NOTIFICATIONS_SERVICE_NAME,
+    NotificationsServiceClient,
+    PAYMENT_FAILED_EVENT,
     RESERVATIONS_SERVICE
 } from '@app/common';
-import {ClientProxy} from '@nestjs/microservices';
+import type {ClientGrpc, ClientProxy} from '@nestjs/microservices';
 import {PaymentsCreateChargeDto} from './dtos/payments-create-charge.dto.js';
 
 @Injectable()
 export class PaymentsService {
     private readonly stripe: Stripe;
     private readonly logger = new Logger(PaymentsService.name);
+    private notificationsService: NotificationsServiceClient;
 
     constructor(
         private readonly configService: ConfigService,
-        @Inject(NOTIFICATIONS_SERVICE) private readonly notificationsService: ClientProxy,
+        @Inject(NOTIFICATIONS_SERVICE_NAME) private readonly client: ClientGrpc,
         @Inject(RESERVATIONS_SERVICE) private readonly reservationsService: ClientProxy,
     ) {
         // this.stripe = new Stripe(this.configService.getOrThrow('STRIPE_SECRET_KEY'), {
@@ -41,13 +44,18 @@ export class PaymentsService {
         //     currency: 'usd',
         // });
 
-        this.notificationsService.emit('notify_email', {
+        if (!this.notificationsService) {
+            this.notificationsService = this.client.getService<NotificationsServiceClient>(NOTIFICATIONS_SERVICE_NAME);
+        }
+
+        this.notificationsService.notifyEmail({
             email,
             text: `Your payment of $${amount} has completed successfully.`
-        });
+        }).subscribe(() => {});
 
         return Promise.resolve(
             {
+                id: '1234',
                 payment_method: '123',
                 amount: amount * 100,
                 confirm: true,
@@ -130,7 +138,7 @@ export class PaymentsService {
 
         const email = session.customer_details?.email ?? session.customer_email;
         if (email) {
-            this.notificationsService.emit('notify_email', {
+            this.notificationsService.notifyEmail({
                 email,
                 text: `Your payment of ${(session.amount_total ?? 0) / 100} has completed successfully `
             });
@@ -138,7 +146,7 @@ export class PaymentsService {
     }
 
     private handlePaymentFailed(session: Stripe.Checkout.Session, reason: string) {
-        const reservationId = session.metadata?.reservationId
+        const reservationId = session.metadata?.reservationId;
         if (!reservationId) {
             return;
         }
@@ -146,6 +154,6 @@ export class PaymentsService {
         this.reservationsService.emit(PAYMENT_FAILED_EVENT, {
             reservationId,
             reason,
-        })
+        });
     }
 }
