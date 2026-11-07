@@ -22,9 +22,15 @@
     "test:e2e": "docker compose --project-directory ./e2e up e2e"
   },
   "dependencies": {
+    "@apollo/gateway": "^2.14.4",
+    "@apollo/server": "^5.5.1",
+    "@apollo/subgraph": "^2.15.1",
+    "@as-integrations/express5": "^1.1.2",
+    "@nestjs/apollo": "^14.2.0",
     "@nestjs/common": "^12.0.1",
     "@nestjs/config": "^12.0.1",
     "@nestjs/core": "^12.0.1",
+    "@nestjs/graphql": "^14.2.0",
     "@nestjs/mapped-types": "*",
     "@nestjs/microservices": "^12.2.0",
     "@nestjs/mongoose": "^12.0.0",
@@ -35,6 +41,7 @@
     "class-validator": "^0.15.1",
     "cookie-parser": "^1.4.7",
     "express": "^5.3.0",
+    "graphql": "^17.1.0",
     "joi": "^18.2.9",
     "mongoose": "^9.11.1",
     "nestjs-pino": "^5.3.1",

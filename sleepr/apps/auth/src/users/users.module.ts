@@ -3,6 +3,7 @@ import {UsersController} from './users.controller.js';
 import {UsersService} from './users.service.js';
 import {UserDocument, UserSchema, DatabaseModule} from '@app/common';
 import {UsersRepository} from './users.repository.js';
+import {UsersResolver} from './users.resolver.js';
 
 @Module({
     imports: [
@@ -18,6 +19,7 @@ import {UsersRepository} from './users.repository.js';
     providers: [
         UsersService,
         UsersRepository,
+        UsersResolver,
     ],
     exports: [
         UsersService,

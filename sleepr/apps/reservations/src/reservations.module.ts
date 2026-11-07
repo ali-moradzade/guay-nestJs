@@ -7,6 +7,10 @@ import {ReservationDocument, ReservationSchema} from './models/reservation.schem
 import {ConfigModule, ConfigService} from '@nestjs/config';
 import Joi from 'joi';
 import {ClientsModule, Transport} from '@nestjs/microservices';
+import {GraphQLModule} from '@nestjs/graphql';
+import {ApolloFederationDriver, ApolloFederationDriverConfig} from '@nestjs/apollo';
+import {ReservationsResolver} from './reservations.resolver.js';
+import {resolve} from 'node:path';
 
 @Module({
     imports: [
@@ -14,9 +18,17 @@ import {ClientsModule, Transport} from '@nestjs/microservices';
         DatabaseModule.forFeature([
             {name: ReservationDocument.name, schema: ReservationSchema}
         ]),
+        GraphQLModule.forRoot<ApolloFederationDriverConfig>({
+            driver: ApolloFederationDriver,
+            autoSchemaFile: {
+                federation: 2
+            },
+
+        }),
         LoggerModule,
         ConfigModule.forRoot({
             isGlobal: true,
+            envFilePath: resolve(process.cwd(), 'apps/reservations/.env'),
             validationSchema: Joi.object({
                 MONGODB_URI: Joi.string().required(),
                 HTTP_PORT: Joi.number().required(),
@@ -61,6 +73,7 @@ import {ClientsModule, Transport} from '@nestjs/microservices';
     providers: [
         ReservationsService,
         ReservationRepository,
+        ReservationsResolver,
     ],
 })
 export class ReservationsModule {

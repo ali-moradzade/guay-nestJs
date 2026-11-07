@@ -46,6 +46,9 @@
     },
     {
       "path": "./apps/notifications/tsconfig.app.json"
+    },
+    {
+      "path": "./apps/gateway/tsconfig.app.json"
     }
   ]
 }

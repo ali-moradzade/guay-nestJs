@@ -4,7 +4,8 @@ import {Stripe} from 'stripe';
 import {
     CheckoutSessionCreated,
     CreateCheckoutSessionDto,
-    NOTIFICATIONS_SERVICE, PAYMENT_FAILED_EVENT,
+    NOTIFICATIONS_SERVICE,
+    PAYMENT_FAILED_EVENT,
     RESERVATIONS_SERVICE
 } from '@app/common';
 import {ClientProxy} from '@nestjs/microservices';
@@ -138,7 +139,7 @@ export class PaymentsService {
     }
 
     private handlePaymentFailed(session: Stripe.Checkout.Session, reason: string) {
-        const reservationId = session.metadata?.reservationId
+        const reservationId = session.metadata?.reservationId;
         if (!reservationId) {
             return;
         }
@@ -146,6 +147,23 @@ export class PaymentsService {
         this.reservationsService.emit(PAYMENT_FAILED_EVENT, {
             reservationId,
             reason,
-        })
+        });
+    }
+
+    async getPayments() {
+        // const payments = await this.stripe.paymentIntents.list();
+        // return payments.data;
+
+        return Promise.resolve([
+                {
+                    id: '123',
+                    amount: 100,
+                },
+                {
+                    id: '1234',
+                    amount: 500,
+                },
+            ]
+        );
     }
 }

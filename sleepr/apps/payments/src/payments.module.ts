@@ -6,11 +6,16 @@ import Joi from 'joi';
 import {LoggerModule, NOTIFICATIONS_SERVICE, RESERVATIONS_SERVICE} from '@app/common';
 import {ClientsModule, Transport} from '@nestjs/microservices';
 import {StripeWebhookController} from './stripe-webhook.controller.js';
+import {resolve} from 'node:path';
+import {GraphQLModule} from '@nestjs/graphql';
+import {ApolloDriverConfig, ApolloFederationDriver} from '@nestjs/apollo';
+import {PaymentsResolver} from './payments.resolver.js';
 
 @Module({
     imports: [
         ConfigModule.forRoot({
             isGlobal: true,
+            envFilePath: resolve(process.cwd(), 'apps/payments/.env'),
             validationSchema: Joi.object({
                 TCP_PORT: Joi.number().required(),
                 HTTP_PORT: Joi.number().required(),
@@ -23,6 +28,12 @@ import {StripeWebhookController} from './stripe-webhook.controller.js';
                 RESERVATIONS_HOST: Joi.string().required(),
                 RESERVATIONS_PORT: Joi.number().required(),
             })
+        }),
+        GraphQLModule.forRoot<ApolloDriverConfig>({
+            driver: ApolloFederationDriver,
+            autoSchemaFile: {
+                federation: 2,
+            }
         }),
         LoggerModule,
         ClientsModule.registerAsync([
@@ -55,7 +66,10 @@ import {StripeWebhookController} from './stripe-webhook.controller.js';
         ])
     ],
     controllers: [PaymentsController, StripeWebhookController],
-    providers: [PaymentsService],
+    providers: [
+        PaymentsService,
+    	PaymentsResolver,
+    ],
 })
 export class PaymentsModule {
 }

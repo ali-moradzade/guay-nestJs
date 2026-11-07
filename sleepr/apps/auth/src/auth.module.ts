@@ -8,6 +8,9 @@ import {ConfigModule, ConfigService} from '@nestjs/config';
 import Joi from 'joi';
 import {LocalStrategy} from './strategies/local.strategy.js';
 import {JwtStrategy} from './strategies/jwt.strategy.js';
+import {resolve} from 'node:path';
+import {GraphQLModule} from '@nestjs/graphql';
+import {ApolloFederationDriver} from '@nestjs/apollo';
 
 @Module({
     imports: [
@@ -15,6 +18,7 @@ import {JwtStrategy} from './strategies/jwt.strategy.js';
         LoggerModule,
         ConfigModule.forRoot({
             isGlobal: true,
+            envFilePath: resolve(process.cwd(), 'apps/auth/.env'),
             validationSchema: Joi.object({
                 MONGODB_URI: Joi.string().required(),
                 JWT_SECRET: Joi.string().required(),
@@ -22,6 +26,12 @@ import {JwtStrategy} from './strategies/jwt.strategy.js';
                 HTTP_PORT: Joi.number().required(),
                 TCP_PORT: Joi.number().required(),
             })
+        }),
+        GraphQLModule.forRoot({
+            driver: ApolloFederationDriver,
+            autoSchemaFile: {
+                federation: 2,
+            }
         }),
         JwtModule.registerAsync({
             inject: [ConfigService],
