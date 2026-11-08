@@ -4,11 +4,13 @@ import {NotificationsService} from './notifications.service.js';
 import {ConfigModule} from '@nestjs/config';
 import Joi from 'joi';
 import {LoggerModule} from '@app/common';
+import {resolve} from 'node:path';
 
 @Module({
     imports: [
         ConfigModule.forRoot({
             isGlobal: true,
+            envFilePath: resolve(process.cwd(), 'apps/notifications/.env'),
             validationSchema: Joi.object({
                 PORT: Joi.number().required(),
                 SMTP_USER: Joi.string().required(),

@@ -6,11 +6,13 @@ import Joi from 'joi';
 import {LoggerModule, NOTIFICATIONS_SERVICE, RESERVATIONS_SERVICE} from '@app/common';
 import {ClientsModule, Transport} from '@nestjs/microservices';
 import {StripeWebhookController} from './stripe-webhook.controller.js';
+import {resolve} from 'node:path';
 
 @Module({
     imports: [
         ConfigModule.forRoot({
             isGlobal: true,
+            envFilePath: resolve(process.cwd(), 'apps/payments/.env'),
             validationSchema: Joi.object({
                 TCP_PORT: Joi.number().required(),
                 HTTP_PORT: Joi.number().required(),

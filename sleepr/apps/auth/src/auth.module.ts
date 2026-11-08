@@ -8,6 +8,8 @@ import {ConfigModule, ConfigService} from '@nestjs/config';
 import Joi from 'joi';
 import {LocalStrategy} from './strategies/local.strategy.js';
 import {JwtStrategy} from './strategies/jwt.strategy.js';
+import {resolve} from 'node:path';
+import {PrismaService} from './prisma.service.js';
 
 @Module({
     imports: [
@@ -15,8 +17,9 @@ import {JwtStrategy} from './strategies/jwt.strategy.js';
         LoggerModule,
         ConfigModule.forRoot({
             isGlobal: true,
+            envFilePath: resolve(process.cwd(), 'apps/auth/.env'),
             validationSchema: Joi.object({
-                MONGODB_URI: Joi.string().required(),
+                DATABASE_URL: Joi.string().required(),
                 JWT_SECRET: Joi.string().required(),
                 JWT_EXPIRATION: Joi.string().required(),
                 HTTP_PORT: Joi.number().required(),
@@ -39,6 +42,7 @@ import {JwtStrategy} from './strategies/jwt.strategy.js';
         AuthService,
         LocalStrategy,
         JwtStrategy,
+        PrismaService,
     ],
 })
 export class AuthModule {

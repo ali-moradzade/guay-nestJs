@@ -1,0 +1,26 @@
+generator client {
+    provider      = "prisma-client-js"
+    output = "../src/generated/prisma"
+    binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+    provider = "postgresql"
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+model Reservation {
+  id        Int               @id @default(autoincrement())
+  timestamp DateTime          @default(now())
+  startDate DateTime
+  endDate   DateTime
+  userId    Int
+  invoiceId String
+  amount    Decimal           @db.Decimal(10, 2)
+  status    ReservationStatus @default(PENDING)
+}

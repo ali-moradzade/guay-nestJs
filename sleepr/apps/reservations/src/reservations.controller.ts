@@ -8,7 +8,7 @@ import {
     PaymentFailedDto,
     PaymentSucceededDto,
 } from '@app/common';
-import type {UserDto} from '@app/common';
+import type {User} from '@app/common';
 import {CurrentUser, JwtAuthGuard, Roles} from '@app/common';
 import {EventPattern, Payload} from '@nestjs/microservices';
 
@@ -21,7 +21,7 @@ export class ReservationsController {
     @UseGuards(JwtAuthGuard)
     async create(
         @Body() createReservationDto: CreateReservationDto,
-        @CurrentUser() user: UserDto,
+        @CurrentUser() user: User,
     ) {
         return this.reservationsService.create(createReservationDto, user);
     }
@@ -35,35 +35,35 @@ export class ReservationsController {
     @Get(':id')
     @UseGuards(JwtAuthGuard)
     findOne(@Param('id') id: string) {
-        return this.reservationsService.findOne(id);
+        return this.reservationsService.findOne(+id);
     }
 
     @Patch(':id')
     @UseGuards(JwtAuthGuard)
     update(@Param('id') id: string, @Body() updateReservationDto: UpdateReservationDto) {
-        return this.reservationsService.update(id, updateReservationDto);
+        return this.reservationsService.update(+id, updateReservationDto);
     }
 
     @Delete(':id')
     @UseGuards(JwtAuthGuard)
     @Roles('Admin')
     remove(@Param('id') id: string) {
-        return this.reservationsService.remove(id);
+        return this.reservationsService.remove(+id);
     }
 
-    @EventPattern(PAYMENT_SUCCEEDED_EVENT)
-    @UsePipes(new ValidationPipe())
-    async handlePaymentSucceeded(
-        @Payload() payload: PaymentSucceededDto,
-    ) {
-        return this.reservationsService.handlePaymentSucceeded(payload);
-    }
-
-    @EventPattern(PAYMENT_FAILED_EVENT)
-    @UsePipes(new ValidationPipe())
-    async handlePaymentFailed(
-        @Payload() payload: PaymentFailedDto,
-    ) {
-        return this.reservationsService.handlePaymentFailed(payload);
-    }
+    // @EventPattern(PAYMENT_SUCCEEDED_EVENT)
+    // @UsePipes(new ValidationPipe())
+    // async handlePaymentSucceeded(
+    //     @Payload() payload: PaymentSucceededDto,
+    // ) {
+    //     return this.reservationsService.handlePaymentSucceeded(payload);
+    // }
+    //
+    // @EventPattern(PAYMENT_FAILED_EVENT)
+    // @UsePipes(new ValidationPipe())
+    // async handlePaymentFailed(
+    //     @Payload() payload: PaymentFailedDto,
+    // ) {
+    //     return this.reservationsService.handlePaymentFailed(payload);
+    // }
 }

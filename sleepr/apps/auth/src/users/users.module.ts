@@ -1,23 +1,14 @@
 import {Module} from '@nestjs/common';
 import {UsersController} from './users.controller.js';
 import {UsersService} from './users.service.js';
-import {UserDocument, UserSchema, DatabaseModule} from '@app/common';
-import {UsersRepository} from './users.repository.js';
+import {PrismaService} from '../prisma.service.js';
 
 @Module({
-    imports: [
-        DatabaseModule,
-        DatabaseModule.forFeature([
-            {
-                name: UserDocument.name,
-                schema: UserSchema,
-            }
-        ])
-    ],
+    imports: [],
     controllers: [UsersController],
     providers: [
         UsersService,
-        UsersRepository,
+        PrismaService,
     ],
     exports: [
         UsersService,

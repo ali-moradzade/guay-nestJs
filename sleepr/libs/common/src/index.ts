@@ -4,5 +4,5 @@ export * from './auth/index.js';
 export * from './constants/index.js';
 export * from './decorators/index.js';
 export * from './dtos/index.js';
-export * from './models/index.js';
 export * from './health/index.js';
+export * from './interfaces/index.js';
