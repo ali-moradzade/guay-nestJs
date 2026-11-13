@@ -1,4 +1,4 @@
-import {Injectable, UnauthorizedException, UnprocessableEntityException} from '@nestjs/common';
+import {Injectable, NotFoundException, UnauthorizedException, UnprocessableEntityException} from '@nestjs/common';
 import {CreateUserDto} from './dto/create-user.dto.js';
 import {UsersRepository} from './users.repository.js';
 import * as bcrypt from 'bcryptjs';
@@ -20,10 +20,16 @@ export class UsersService {
     }
 
     async verifyUser(email: string, password: string) {
-        const user = await this.usersRepository.findOne({email});
+        let user;
 
-        if (!user) {
-            throw new UnauthorizedException('Credentials are not valid');
+        try {
+            user = await this.usersRepository.findOne({email});
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw new UnauthorizedException('Credentials are not valid');
+            }
+
+            throw error;
         }
 
         const passwordIsValid = await bcrypt.compare(password, user.password);
@@ -36,11 +42,19 @@ export class UsersService {
     }
 
     private async validateCreateUserDto(createUserDto: CreateUserDto) {
-            const existingUser = await this.usersRepository.findOne({email: createUserDto.email})
+        try {
+            await this.usersRepository.findOne({
+                email: createUserDto.email,
+            });
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                return;
+            }
 
-        if (existingUser) {
-            throw new UnprocessableEntityException('Email already exists');
+            throw error;
         }
+
+        throw new UnprocessableEntityException('Email already exists');
     }
 
     async getUser(getUserDto: GetUserDto) {

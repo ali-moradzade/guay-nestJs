@@ -1,8 +1,13 @@
-import {defineConfig} from 'vitest/config';
+import { defineConfig } from 'vitest/config';
+import { fileURLToPath } from 'node:url';
 
 export default defineConfig({
     resolve: {
-        tsconfigPaths: true,
+        alias: {
+            '@app/common': fileURLToPath(
+                new URL('./libs/common/src', import.meta.url),
+            ),
+        },
     },
 
     oxc: {
