@@ -33,9 +33,6 @@
   "files": [],
   "references": [
     {
-      "path": "./apps/sleepr/tsconfig.app.json"
-    },
-    {
       "path": "./apps/reservations/tsconfig.app.json"
     },
     {

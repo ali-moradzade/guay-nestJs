@@ -21,6 +21,11 @@ export class UsersService {
 
     async verifyUser(email: string, password: string) {
         const user = await this.usersRepository.findOne({email});
+
+        if (!user) {
+            throw new UnauthorizedException('Credentials are not valid');
+        }
+
         const passwordIsValid = await bcrypt.compare(password, user.password);
 
         if (!passwordIsValid) {
@@ -31,13 +36,11 @@ export class UsersService {
     }
 
     private async validateCreateUserDto(createUserDto: CreateUserDto) {
-        try {
-            await this.usersRepository.findOne({email: createUserDto.email})
-        } catch (err) {
-            return;
-        }
+            const existingUser = await this.usersRepository.findOne({email: createUserDto.email})
 
-        throw new UnprocessableEntityException('Email already exists');
+        if (existingUser) {
+            throw new UnprocessableEntityException('Email already exists');
+        }
     }
 
     async getUser(getUserDto: GetUserDto) {

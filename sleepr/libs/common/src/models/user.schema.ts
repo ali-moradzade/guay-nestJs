@@ -1,6 +1,6 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
-import {AbstractDocument} from '@app/common';
 import {Field, ObjectType} from '@nestjs/graphql';
+import {AbstractDocument} from '../database/abstract.schema.js';
 
 @Schema({
     versionKey: false
