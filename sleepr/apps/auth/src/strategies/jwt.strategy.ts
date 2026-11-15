@@ -16,10 +16,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
                 (request: any) =>
                     request?.cookies?.Authentication ||
                     request?.Authentication ||
-                    request?.headers?.Authentication ||
+                    request?.headers?.authentication ||
                     request?.headers?.authorization?.replace(/^Bearer\s+/i, '')
             ]),
-            secretOrKey: configService.getOrThrow('JWT_SECRET'),
+            secretOrKey: configService.getOrThrow<string>('JWT_SECRET'),
         });
     }
 

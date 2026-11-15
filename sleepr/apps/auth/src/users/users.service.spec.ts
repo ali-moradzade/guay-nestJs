@@ -1,11 +1,11 @@
-import {UnauthorizedException, UnprocessableEntityException,} from '@nestjs/common';
+import {NotFoundException, UnauthorizedException, UnprocessableEntityException,} from '@nestjs/common';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 import * as bcrypt from 'bcryptjs';
 
 import {UsersService} from './users.service.js';
 import {UsersRepository} from './users.repository.js';
 import {CreateUserDto} from './dto/create-user.dto.js';
-import {GetUserDto} from './dto/get-user.dto';
+import {GetUserDto} from './dto/get-user.dto.js';
 
 describe('UsersService', () => {
     let usersService: UsersService;
@@ -37,7 +37,9 @@ describe('UsersService', () => {
                 roles: ['Admin'],
             };
 
-            usersRepository.findOne.mockResolvedValue(null);
+            usersRepository.findOne.mockRejectedValue(
+                new NotFoundException('Document was not found'),
+            );
             usersRepository.create.mockResolvedValue(createdUser);
 
             const result = await usersService.create(createUserDto);
@@ -131,7 +133,9 @@ describe('UsersService', () => {
         });
 
         it('should throw UnauthorizedException when user does not exist', async () => {
-            usersRepository.findOne.mockResolvedValue(null);
+            usersRepository.findOne.mockRejectedValue(
+                new NotFoundException('Document was not found'),
+            );
 
             await expect(
                 usersService.verifyUser(email, password),

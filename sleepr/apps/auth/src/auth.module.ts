@@ -38,7 +38,7 @@ import {ApolloFederationDriver} from '@nestjs/apollo';
             useFactory: (configService: ConfigService) => ({
                 secret: configService.getOrThrow<string>('JWT_SECRET'),
                 signOptions: {
-                    expiresIn: `${configService.getOrThrow('JWT_EXPIRATION')}s`
+                    expiresIn: `${configService.getOrThrow<number>('JWT_EXPIRATION')}s`
                 }
             })
         }),

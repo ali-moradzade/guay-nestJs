@@ -20,7 +20,7 @@ export class AuthService {
 
         const expires = new Date();
         expires.setSeconds(
-            expires.getSeconds() + this.configService.getOrThrow('JWT_EXPIRATION')
+            expires.getSeconds() + this.configService.getOrThrow<number>('JWT_EXPIRATION')
         );
 
         const token = this.jwtService.sign(tokenPayload);

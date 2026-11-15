@@ -6,7 +6,6 @@ import {afterAll, beforeAll, beforeEach, describe, expect, it,} from 'vitest';
 import * as bcrypt from 'bcryptjs';
 import {UsersModule} from './users.module.js';
 import {UsersService} from './users.service.js';
-// @ts-ignore
 import {UserDocument} from '@app/common';
 import {resolve} from 'node:path';
 

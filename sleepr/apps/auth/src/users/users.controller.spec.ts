@@ -3,7 +3,6 @@ import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {UsersController} from './users.controller.js';
 import {UsersService} from './users.service.js';
 import {CreateUserDto} from './dto/create-user.dto.js';
-// @ts-ignore
 import {UserDocument} from '@app/common';
 
 describe('UsersController', () => {
