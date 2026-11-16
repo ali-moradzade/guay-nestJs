@@ -11,6 +11,7 @@ import {JwtStrategy} from './strategies/jwt.strategy.js';
 import {resolve} from 'node:path';
 import {GraphQLModule} from '@nestjs/graphql';
 import {ApolloFederationDriver} from '@nestjs/apollo';
+import {RpcJwtAuthGuard} from './guards/rpc-jwt-auth.guard.js';
 
 @Module({
     imports: [
@@ -49,6 +50,7 @@ import {ApolloFederationDriver} from '@nestjs/apollo';
         AuthService,
         LocalStrategy,
         JwtStrategy,
+        RpcJwtAuthGuard,
     ],
 })
 export class AuthModule {
