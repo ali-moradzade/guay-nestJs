@@ -1,6 +1,6 @@
 import {Injectable, OnModuleInit} from '@nestjs/common';
-import {NotifyEmailDto} from './dtos/notify-email.dto.js';
 import nodemailer, {Transporter} from 'nodemailer';
+import {NotifyEmailDto} from './dtos/notify-email.dto.js';
 
 @Injectable()
 export class NotificationsService implements OnModuleInit {
@@ -24,6 +24,10 @@ export class NotificationsService implements OnModuleInit {
     }
 
     async notifyEmail({email, text}: NotifyEmailDto) {
+        if (!this.transporter) {
+            throw new Error('Email transporter has not been initialized');
+        }
+
         const info = await this.transporter.sendMail({
             from: `"Sleepr Notifications" <${this.etherealUser}>`,
             to: email,

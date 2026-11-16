@@ -12,11 +12,7 @@ import {resolve} from 'node:path';
             isGlobal: true,
             envFilePath: resolve(process.cwd(), 'apps/notifications/.env'),
             validationSchema: Joi.object({
-                PORT: Joi.number().required(),
-                SMTP_USER: Joi.string().required(),
-                GOOGLE_OAUTH_CLIENT_ID: Joi.string().required(),
-                GOOGLE_OAUTH_CLIENT_SECRET: Joi.string().required(),
-                GOOGLE_OAUTH_REFRESH_TOKEN: Joi.string().required(),
+                RABBITMQ_URI: Joi.string().required(),
             })
         }),
         LoggerModule
