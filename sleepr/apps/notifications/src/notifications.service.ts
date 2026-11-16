@@ -1,35 +1,44 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, OnModuleInit} from '@nestjs/common';
 import {NotifyEmailDto} from './dtos/notify-email.dto.js';
 import nodemailer, {Transporter} from 'nodemailer';
-import {ConfigService} from '@nestjs/config';
 
 @Injectable()
-export class NotificationsService {
-    private readonly transporter: Transporter;
+export class NotificationsService implements OnModuleInit {
+    private transporter!: Transporter;
+    private etherealUser!: string;
 
-    constructor(
-        private readonly configService: ConfigService,
-    ) {
+    async onModuleInit() {
+        const testAccount = await nodemailer.createTestAccount();
+
+        this.etherealUser = testAccount.user;
+
         this.transporter = nodemailer.createTransport({
-            service: 'gmail',
+            host: testAccount.smtp.host,
+            port: testAccount.smtp.port,
+            secure: testAccount.smtp.secure,
             auth: {
-                type: 'OAUTH2',
-                user: this.configService.getOrThrow('SMTP_USER'),
-                clientId: this.configService.getOrThrow('GOOGLE_OAUTH_CLIENT_ID'),
-                clientSecret: this.configService.getOrThrow('GOOGLE_OAUTH_CLIENT_SECRET'),
-                refreshToken: this.configService.getOrThrow('GOOGLE_OAUTH_REFRESH_TOKEN'),
-            }
-        })
+                user: testAccount.user,
+                pass: testAccount.pass,
+            },
+        });
     }
 
     async notifyEmail({email, text}: NotifyEmailDto) {
-        // *************** UNCOMMENT TO USE REAL SERVICE ***************
-        // await this.transporter.sendMail({
-        //     from: this.configService.getOrThrow('SMTP_USER'),
-        //     to: email,
-        //     subject: 'Sleeper Notification',
-        //     text,
-        // })
-        console.log(`Email sent to: ${email}\n\n${text}`);
+        const info = await this.transporter.sendMail({
+            from: `"Sleepr Notifications" <${this.etherealUser}>`,
+            to: email,
+            subject: 'Sleepr Notification',
+            text,
+        });
+
+        const previewUrl = nodemailer.getTestMessageUrl(info);
+
+        console.log(`Email sent to: ${email}`);
+        console.log(`Preview URL: ${previewUrl}`);
+
+        return {
+            messageId: info.messageId,
+            previewUrl,
+        };
     }
 }
