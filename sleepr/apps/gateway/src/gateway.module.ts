@@ -8,6 +8,7 @@ import {IntrospectAndCompose, RemoteGraphQLDataSource} from '@apollo/gateway';
 import {ClientsModule, Transport} from '@nestjs/microservices';
 import {authContext} from './auth.context.js';
 import Joi from 'joi';
+import {forwardUserContext} from './user-context';
 
 @Module({
     imports: [
@@ -49,12 +50,7 @@ import Joi from 'joi';
                     buildService({url}) {
                         return new RemoteGraphQLDataSource({
                             url,
-                            willSendRequest({request, context}) {
-                                request.http?.headers.set(
-                                    'user',
-                                    context.user ? JSON.stringify(context.user) : '',
-                                );
-                            }
+                            willSendRequest: forwardUserContext,
                         });
                     }
                 }
