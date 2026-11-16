@@ -1,0 +1,10 @@
+{
+  "name": "@sleepr/gateway",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "vitest run --config ../../vitest.config.ts src",
+    "test:watch": "vitest --config ../../vitest.config.ts src",
+    "test:coverage": "vitest run --coverage --config ../../vitest.config.ts src"
+  }
+}

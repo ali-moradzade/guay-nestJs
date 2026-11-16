@@ -7,16 +7,24 @@ import {ApolloGatewayDriver, ApolloGatewayDriverConfig} from '@nestjs/apollo';
 import {IntrospectAndCompose, RemoteGraphQLDataSource} from '@apollo/gateway';
 import {ClientsModule, Transport} from '@nestjs/microservices';
 import {authContext} from './auth.context.js';
+import Joi from 'joi';
 
 @Module({
     imports: [
         ConfigModule.forRoot({
             isGlobal: true,
             envFilePath: resolve(process.cwd(), 'apps/gateway/.env'),
+            validationSchema: Joi.object({
+                RESERVATIONS_GRAPHQL_URL: Joi.string().required(),
+                AUTH_GRAPHQL_URL: Joi.string().required(),
+                PAYMENTS_GRAPHQL_URL: Joi.string().required(),
+                RABBITMQ_URI: Joi.string().required(),
+            }),
         }),
         LoggerModule,
         GraphQLModule.forRootAsync<ApolloGatewayDriverConfig>({
             driver: ApolloGatewayDriver,
+            inject: [ConfigService],
             useFactory: (configService: ConfigService) => ({
                 server: {
                     context: authContext,
@@ -26,15 +34,15 @@ import {authContext} from './auth.context.js';
                         subgraphs: [
                             {
                                 name: 'reservations',
-                                url: configService.getOrThrow('RESERVATIONS_GRAPHQL_URL'),
+                                url: configService.getOrThrow<string>('RESERVATIONS_GRAPHQL_URL'),
                             },
                             {
                                 name: 'auth',
-                                url: configService.getOrThrow('AUTH_GRAPHQL_URL'),
+                                url: configService.getOrThrow<string>('AUTH_GRAPHQL_URL'),
                             },
                             {
                                 name: 'payments',
-                                url: configService.getOrThrow('PAYMENTS_GRAPHQL_URL'),
+                                url: configService.getOrThrow<string>('PAYMENTS_GRAPHQL_URL'),
                             },
                         ]
                     }),
@@ -51,11 +59,11 @@ import {authContext} from './auth.context.js';
                     }
                 }
             }),
-            inject: [ConfigService],
         }),
         ClientsModule.registerAsync([
             {
                 name: AUTH_SERVICE,
+                inject: [ConfigService],
                 useFactory: (configService: ConfigService) => ({
                     transport: Transport.RMQ,
                     options: {
@@ -65,7 +73,6 @@ import {authContext} from './auth.context.js';
                         queue: 'auth',
                     }
                 }),
-                inject: [ConfigService],
             }
         ])
     ],
