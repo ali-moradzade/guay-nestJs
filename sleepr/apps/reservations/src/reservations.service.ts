@@ -5,15 +5,16 @@ import {ReservationRepository} from './reservation.repository.js';
 import {CheckoutSessionCreated, PaymentFailedDto, PAYMENTS_SERVICE, PaymentSucceededDto, UserDto} from '@app/common';
 import {ClientProxy} from '@nestjs/microservices';
 import {lastValueFrom} from 'rxjs';
+import {PinoLogger} from 'nestjs-pino';
 
 @Injectable()
 export class ReservationsService {
-    private readonly logger = new Logger(ReservationsService.name);
-
     constructor(
         private readonly repository: ReservationRepository,
         @Inject(PAYMENTS_SERVICE) private readonly paymentsService: ClientProxy,
+        private readonly logger: PinoLogger,
     ) {
+        this.logger.setContext(ReservationsService.name);
     }
 
     async create(
@@ -99,7 +100,7 @@ export class ReservationsService {
     }
 
     async handlePaymentSucceeded({reservationId, paymentIntentId}: PaymentSucceededDto) {
-        this.logger.log(`Payment succeeded for reservation ${reservationId}`);
+        this.logger.info(`Payment succeeded for reservation ${reservationId}`);
         try {
             await this.repository.findOneAndUpdate(
                 {_id: reservationId},
@@ -115,7 +116,7 @@ export class ReservationsService {
     }
 
     async handlePaymentFailed({reservationId, reason}: PaymentFailedDto) {
-        this.logger.log(`Payment failed for reservation ${reservationId}. ${reason}`);
+        this.logger.info(`Payment failed for reservation ${reservationId}. ${reason}`);
         try {
             await this.repository.findOneAndUpdate(
                 {_id: reservationId, status: 'pending'},
