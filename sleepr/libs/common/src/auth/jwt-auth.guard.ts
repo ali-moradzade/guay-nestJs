@@ -1,18 +1,19 @@
-import {CanActivate, ExecutionContext, Inject, Injectable, Logger, UnauthorizedException} from '@nestjs/common';
+import {CanActivate, ExecutionContext, Inject, Injectable, UnauthorizedException} from '@nestjs/common';
 import {catchError, map, Observable, of, tap} from 'rxjs';
 import {AUTH_SERVICE} from '../constants/services.js';
 import {ClientProxy} from '@nestjs/microservices';
 import {UserDto} from '@app/common';
 import {Reflector} from '@nestjs/core';
+import {PinoLogger} from 'nestjs-pino';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
-    private readonly logger = new Logger(JwtAuthGuard.name);
-
     constructor(
         @Inject(AUTH_SERVICE) private readonly authClient: ClientProxy,
         private readonly reflector: Reflector,
+        private readonly logger: PinoLogger,
     ) {
+        this.logger.setContext(JwtAuthGuard.name);
     }
 
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
@@ -25,7 +26,10 @@ export class JwtAuthGuard implements CanActivate {
             return false;
         }
 
-        const roles = this.reflector.get<string[]>('roles', context.getHandler());
+        const roles = this.reflector.getAllAndOverride<string[]>('roles', [
+            context.getHandler(),
+            context.getClass(),
+        ]);
 
         return this.authClient.send<UserDto>('authenticate', {
             Authentication: jwt
@@ -44,7 +48,7 @@ export class JwtAuthGuard implements CanActivate {
             }),
             map(() => true),
             catchError((error) => {
-                this.logger.error(error);
+                this.logger.error({err: error}, 'Authentication failed');
                 return of(false);
             })
         );
