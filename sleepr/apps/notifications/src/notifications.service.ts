@@ -1,7 +1,7 @@
 import {Injectable, OnModuleInit} from '@nestjs/common';
 import nodemailer, {Transporter} from 'nodemailer';
 import {NotifyEmailDto} from './dtos/notify-email.dto.js';
-import {InjectPinoLogger, PinoLogger} from 'nestjs-pino';
+import {PinoLogger} from 'nestjs-pino';
 
 @Injectable()
 export class NotificationsService implements OnModuleInit {
@@ -9,8 +9,9 @@ export class NotificationsService implements OnModuleInit {
     private etherealUser!: string;
 
     constructor(
-        @InjectPinoLogger(NotificationsService.name) private readonly logger: PinoLogger,
+        private readonly logger: PinoLogger,
     ) {
+        this.logger.setContext(NotificationsService.name);
     }
 
     async onModuleInit() {

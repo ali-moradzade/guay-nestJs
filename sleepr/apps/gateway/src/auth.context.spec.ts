@@ -4,7 +4,6 @@ import {authContext} from './auth.context.js';
 import {setApp} from './app.js';
 import {beforeEach, describe, expect, it, vi,} from 'vitest';
 import {Types} from 'mongoose';
-// @ts-ignore
 import {AUTH_SERVICE} from '@app/common';
 
 describe('authContext', () => {

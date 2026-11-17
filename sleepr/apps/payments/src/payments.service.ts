@@ -1,4 +1,4 @@
-import {Inject, Injectable, Logger} from '@nestjs/common';
+import {Inject, Injectable} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
 import {Stripe} from 'stripe';
 import {
@@ -10,20 +10,19 @@ import {
 } from '@app/common';
 import {ClientProxy} from '@nestjs/microservices';
 import {PaymentsCreateChargeDto} from './dtos/payments-create-charge.dto.js';
+import {STRIPE_CLIENT} from './stripe.provider.js';
+import {PinoLogger} from 'nestjs-pino';
 
 @Injectable()
 export class PaymentsService {
-    private readonly stripe: Stripe;
-    private readonly logger = new Logger(PaymentsService.name);
-
     constructor(
         private readonly configService: ConfigService,
+        private readonly logger: PinoLogger,
+        @Inject(STRIPE_CLIENT) private readonly stripe: Stripe,
         @Inject(NOTIFICATIONS_SERVICE) private readonly notificationsService: ClientProxy,
         @Inject(RESERVATIONS_SERVICE) private readonly reservationsService: ClientProxy,
     ) {
-        // this.stripe = new Stripe(this.configService.getOrThrow('STRIPE_SECRET_KEY'), {
-        //     apiVersion: '2026-09-30.endive',
-        // });
+        this.logger.setContext(PaymentsService.name);
     }
 
     async createCharge({card, amount, email}: PaymentsCreateChargeDto) {

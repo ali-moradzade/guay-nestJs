@@ -10,6 +10,7 @@ import {resolve} from 'node:path';
 import {GraphQLModule} from '@nestjs/graphql';
 import {ApolloDriverConfig, ApolloFederationDriver} from '@nestjs/apollo';
 import {PaymentsResolver} from './payments.resolver.js';
+import {StripeProvider} from './stripe.provider.js';
 
 @Module({
     imports: [
@@ -72,6 +73,7 @@ import {PaymentsResolver} from './payments.resolver.js';
     providers: [
         PaymentsService,
     	PaymentsResolver,
+        StripeProvider,
     ],
 })
 export class PaymentsModule {
