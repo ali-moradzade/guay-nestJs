@@ -8,7 +8,11 @@ export class NotificationsController {
     constructor(private readonly notificationsService: NotificationsService) {
     }
 
-    @UsePipes(new ValidationPipe())
+    @UsePipes(new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+    }))
     @EventPattern('notify_email')
     async notifyEmail(
         @Payload() data: NotifyEmailDto,
