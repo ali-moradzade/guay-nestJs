@@ -17,6 +17,7 @@ import {PaymentsResolver} from './payments.resolver.js';
             isGlobal: true,
             envFilePath: resolve(process.cwd(), 'apps/payments/.env'),
             validationSchema: Joi.object({
+                SERVICE_NAME: Joi.string().required(),
                 TCP_PORT: Joi.number().required(),
                 HTTP_PORT: Joi.number().required(),
                 STRIPE_SECRET_KEY: Joi.string().required(),

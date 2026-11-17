@@ -16,6 +16,7 @@ import {forwardUserContext} from './user-context';
             isGlobal: true,
             envFilePath: resolve(process.cwd(), 'apps/gateway/.env'),
             validationSchema: Joi.object({
+                SERVICE_NAME: Joi.string().required(),
                 RESERVATIONS_GRAPHQL_URL: Joi.string().required(),
                 AUTH_GRAPHQL_URL: Joi.string().required(),
                 PAYMENTS_GRAPHQL_URL: Joi.string().required(),

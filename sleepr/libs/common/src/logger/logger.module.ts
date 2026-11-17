@@ -1,7 +1,6 @@
 import {Module} from '@nestjs/common';
 import {LoggerModule as PinoLoggerModule} from 'nestjs-pino';
 import {ConfigModule, ConfigService} from '@nestjs/config';
-import {stdSerializers} from 'pino-http';
 
 @Module({
     imports: [
@@ -15,9 +14,8 @@ import {stdSerializers} from 'pino-http';
             useFactory: (configService: ConfigService) => ({
                 pinoHttp: {
                     level: 'info',
-                    serializers: {
-                        req: stdSerializers.req,
-                        res: stdSerializers.res,
+                    base: {
+                        service: configService.getOrThrow<string>('SERVICE_NAME'),
                     },
                     transport: {
                         targets: [

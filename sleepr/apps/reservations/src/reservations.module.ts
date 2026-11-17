@@ -28,6 +28,7 @@ import {resolve} from 'node:path';
             isGlobal: true,
             envFilePath: resolve(process.cwd(), 'apps/reservations/.env'),
             validationSchema: Joi.object({
+                SERVICE_NAME: Joi.string().required(),
                 MONGODB_URI: Joi.string().required(),
                 HTTP_PORT: Joi.number().required(),
                 TCP_PORT: Joi.number().required(),

@@ -20,6 +20,7 @@ import {RpcJwtAuthGuard} from './guards/rpc-jwt-auth.guard.js';
             isGlobal: true,
             envFilePath: resolve(process.cwd(), 'apps/auth/.env'),
             validationSchema: Joi.object({
+                SERVICE_NAME: Joi.string().required(),
                 MONGODB_URI: Joi.string().required(),
                 JWT_SECRET: Joi.string().required(),
                 JWT_EXPIRATION: Joi.string().required(),

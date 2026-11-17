@@ -12,6 +12,7 @@ import {resolve} from 'node:path';
             isGlobal: true,
             envFilePath: resolve(process.cwd(), 'apps/notifications/.env'),
             validationSchema: Joi.object({
+                SERVICE_NAME: Joi.string().required(),
                 RABBITMQ_URI: Joi.string().required(),
                 ELASTICSEARCH_NODE: Joi.string().required(),
                 ELASTICSEARCH_INDEX: Joi.string().required(),
