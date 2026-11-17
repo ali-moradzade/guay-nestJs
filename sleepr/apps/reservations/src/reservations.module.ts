@@ -23,9 +23,7 @@ import {resolve} from 'node:path';
             autoSchemaFile: {
                 federation: 2
             },
-
         }),
-        LoggerModule,
         ConfigModule.forRoot({
             isGlobal: true,
             envFilePath: resolve(process.cwd(), 'apps/reservations/.env'),
@@ -37,8 +35,11 @@ import {resolve} from 'node:path';
                 AUTH_PORT: Joi.number().required(),
                 PAYMENTS_HOST: Joi.string().required(),
                 PAYMENTS_PORT: Joi.number().required(),
+                ELASTICSEARCH_NODE: Joi.string().required(),
+                ELASTICSEARCH_INDEX: Joi.string().required(),
             })
         }),
+        LoggerModule,
         ClientsModule.registerAsync([
             {
                 name: AUTH_SERVICE,

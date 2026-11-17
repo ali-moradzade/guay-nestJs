@@ -13,6 +13,8 @@ import {resolve} from 'node:path';
             envFilePath: resolve(process.cwd(), 'apps/notifications/.env'),
             validationSchema: Joi.object({
                 RABBITMQ_URI: Joi.string().required(),
+                ELASTICSEARCH_NODE: Joi.string().required(),
+                ELASTICSEARCH_INDEX: Joi.string().required(),
             })
         }),
         LoggerModule

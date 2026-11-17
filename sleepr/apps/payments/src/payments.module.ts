@@ -27,6 +27,8 @@ import {PaymentsResolver} from './payments.resolver.js';
                 STRIPE_WEBHOOK_SECRET: Joi.string().required(),
                 RESERVATIONS_HOST: Joi.string().required(),
                 RESERVATIONS_PORT: Joi.number().required(),
+                ELASTICSEARCH_NODE: Joi.string().required(),
+                ELASTICSEARCH_INDEX: Joi.string().required(),
             })
         }),
         GraphQLModule.forRoot<ApolloDriverConfig>({

@@ -20,6 +20,8 @@ import {forwardUserContext} from './user-context';
                 AUTH_GRAPHQL_URL: Joi.string().required(),
                 PAYMENTS_GRAPHQL_URL: Joi.string().required(),
                 RABBITMQ_URI: Joi.string().required(),
+                ELASTICSEARCH_NODE: Joi.string().required(),
+                ELASTICSEARCH_INDEX: Joi.string().required(),
             }),
         }),
         LoggerModule,

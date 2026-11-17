@@ -16,7 +16,6 @@ import {RpcJwtAuthGuard} from './guards/rpc-jwt-auth.guard.js';
 @Module({
     imports: [
         UsersModule,
-        LoggerModule,
         ConfigModule.forRoot({
             isGlobal: true,
             envFilePath: resolve(process.cwd(), 'apps/auth/.env'),
@@ -26,8 +25,11 @@ import {RpcJwtAuthGuard} from './guards/rpc-jwt-auth.guard.js';
                 JWT_EXPIRATION: Joi.string().required(),
                 HTTP_PORT: Joi.number().required(),
                 TCP_PORT: Joi.number().required(),
+                ELASTICSEARCH_NODE: Joi.string().required(),
+                ELASTICSEARCH_INDEX: Joi.string().required(),
             })
         }),
+        LoggerModule,
         GraphQLModule.forRoot({
             driver: ApolloFederationDriver,
             autoSchemaFile: {
