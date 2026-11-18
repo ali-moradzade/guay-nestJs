@@ -31,11 +31,7 @@ import {resolve} from 'node:path';
                 SERVICE_NAME: Joi.string().required(),
                 MONGODB_URI: Joi.string().required(),
                 HTTP_PORT: Joi.number().required(),
-                TCP_PORT: Joi.number().required(),
-                AUTH_HOST: Joi.string().required(),
-                AUTH_PORT: Joi.number().required(),
-                PAYMENTS_HOST: Joi.string().required(),
-                PAYMENTS_PORT: Joi.number().required(),
+                RABBITMQ_URI: Joi.string().required(),
                 ELASTICSEARCH_NODE: Joi.string().required(),
                 ELASTICSEARCH_INDEX: Joi.string().required(),
             })
@@ -44,6 +40,7 @@ import {resolve} from 'node:path';
         ClientsModule.registerAsync([
             {
                 name: AUTH_SERVICE,
+                inject: [ConfigService],
                 useFactory: (configService: ConfigService) => ({
                     transport: Transport.RMQ,
                     options: {
@@ -53,10 +50,10 @@ import {resolve} from 'node:path';
                         queue: 'auth',
                     }
                 }),
-                inject: [ConfigService],
             },
             {
                 name: PAYMENTS_SERVICE,
+                inject: [ConfigService],
                 useFactory: (configService: ConfigService) => ({
                     transport: Transport.RMQ,
                     options: {
@@ -66,7 +63,6 @@ import {resolve} from 'node:path';
                         queue: 'payments',
                     }
                 }),
-                inject: [ConfigService],
             },
         ]),
         HealthModule,

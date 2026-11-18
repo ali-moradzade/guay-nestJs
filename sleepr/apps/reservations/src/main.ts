@@ -15,17 +15,19 @@ async function bootstrap() {
     app.useLogger(app.get(Logger))
     app.use(cookieParser())
 
-    const configService = app.get(ConfigService);
+    const configService = app.get<ConfigService>(ConfigService);
 
     app.connectMicroservice({
-        transport: Transport.TCP,
+        transport: Transport.RMQ,
         options: {
-            host: '0.0.0.0',
-            port: configService.getOrThrow('TCP_PORT')
+            urls: [
+                configService.getOrThrow('RABBITMQ_URI')
+            ],
+            queue: 'reservations',
         }
     })
-    await app.startAllMicroservices();
 
+    await app.startAllMicroservices();
     await app.listen(configService.getOrThrow('HTTP_PORT'));
 }
 

@@ -1,9 +1,10 @@
 import {AbstractDocument} from '@app/common/database/abstract.schema.js';
 import {Model, QueryFilter, Types, UpdateQuery} from 'mongoose';
-import {Logger, NotFoundException} from '@nestjs/common';
+import {NotFoundException} from '@nestjs/common';
+import {PinoLogger} from 'nestjs-pino';
 
 export abstract class AbstractRepository<TDocument extends AbstractDocument> {
-    protected abstract readonly logger: Logger;
+    protected abstract readonly logger: PinoLogger;
 
     constructor(protected readonly model: Model<TDocument>) {
     }
@@ -21,7 +22,7 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
         const document = await this.model.findOne(queryFilter).lean<TDocument>(true);
 
         if (!document) {
-            this.logger.warn('Document was not found with queryFilter', queryFilter);
+            this.logger.warn({queryFilter}, 'Document was not found with queryFilter');
             throw new NotFoundException('Document was not found');
         }
 
@@ -34,7 +35,7 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
         }).lean<TDocument>(true);
 
         if (!document) {
-            this.logger.warn('Document was not found with queryFilter', queryFilter);
+            this.logger.warn({queryFilter}, 'Document was not found with queryFilter');
             throw new NotFoundException('Document was not found');
         }
 
@@ -49,7 +50,7 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
         const document = await this.model.findOneAndDelete(queryFilter).lean<TDocument>(true);
 
         if (!document) {
-            this.logger.warn('Document was not found with queryFilter', queryFilter);
+            this.logger.warn({queryFilter}, 'Document was not found with queryFilter');
             throw new NotFoundException('Document was not found');
         }
 

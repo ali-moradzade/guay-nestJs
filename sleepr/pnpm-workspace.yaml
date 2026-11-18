@@ -1,5 +1,6 @@
 packages:
   - 'apps/*'
+  - 'libs/*'
 allowBuilds:
   '@apollo/protobufjs': true
   protobufjs: true
