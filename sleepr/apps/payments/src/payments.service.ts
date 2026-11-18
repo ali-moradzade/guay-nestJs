@@ -46,6 +46,8 @@ export class PaymentsService {
             text: `Your payment of $${amount} has completed successfully.`
         });
 
+        this.logger.info({email}, `Your payment of ${amount} was successful.`)
+
         return Promise.resolve(
             {
                 payment_method: '123',
